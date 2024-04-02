@@ -12,9 +12,9 @@ class TodoModel {
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
-        id: map[DbAppConnection.TABLE_COLUME_ID],
-        title: map[DbAppConnection.TABLE_COLUME_TITLE],
-        desc: map[DbAppConnection.TABLE_COLUME_DESC]);
+        id: map[DbAppConnection.TABLE_COLUMN_ID],
+        title: map[DbAppConnection.TABLE_COLUMN_TITLE],
+        desc: map[DbAppConnection.TABLE_COLUMN_DESC]);
   }
 
   
@@ -23,8 +23,8 @@ class TodoModel {
 
   Map<String, dynamic> toMap() {
     return {
-      DbAppConnection.TABLE_COLUME_TITLE: title,
-      DbAppConnection.TABLE_COLUME_DESC: desc
+      DbAppConnection.TABLE_COLUMN_TITLE: title,
+      DbAppConnection.TABLE_COLUMN_DESC: desc
     };
   }
 }

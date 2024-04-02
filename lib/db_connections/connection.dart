@@ -15,9 +15,9 @@ class DbAppConnection {
   
   /// creating global static values
   static const String TABLE_NAME = 'todo';
-  static const String TABLE_COLUME_TITLE = 'todo_title';
-  static const String TABLE_COLUME_DESC = 'todo_desc';
-  static const String TABLE_COLUME_ID = 'id';
+  static const String TABLE_COLUMN_TITLE = 'todo_title';
+  static const String TABLE_COLUMN_DESC = 'todo_desc';
+  static const String TABLE_COLUMN_ID = 'id';
 
   /// all db logic
 
@@ -42,7 +42,7 @@ class DbAppConnection {
 
       /// create table
       await db.execute(
-          'CREATE TABLE $TABLE_NAME ($TABLE_COLUME_ID INTEGER PRIMARY KEY AUTOINCREMENT, $TABLE_COLUME_TITLE TEXT, $TABLE_COLUME_DESC TEXT )');
+          'CREATE TABLE $TABLE_NAME ($TABLE_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $TABLE_COLUMN_TITLE TEXT, $TABLE_COLUMN_DESC TEXT )');
         
       },
     );
@@ -50,7 +50,7 @@ class DbAppConnection {
   
 
   /// insert data
-  Future addTodo({required TodoModel todoModel}) async{
+  void addTodo({required TodoModel todoModel}) async{
     var db = await getDB();
     
     db.insert(TABLE_NAME, todoModel.toMap());
@@ -75,9 +75,18 @@ class DbAppConnection {
   }
   
   
-  void deleteTodo(int id) async{
+  updateTodo(TodoModel todoModel) async{
+
     var db = await getDB();
-    db.delete(TABLE_NAME, where: TABLE_COLUME_ID);
+    db.update(TABLE_NAME, todoModel.toMap(), where: "$TABLE_COLUMN_ID = ?", whereArgs: ['${todoModel.id}']);
+    // db.update(TABLE_NAME, todoModel.toMap(), where: "$TABLE_COLUMN_ID = ${todoModel.id}");
+    
+  }
+  
+  
+  deleteTodo(int id) async{
+    var db = await getDB();
+    db.delete(TABLE_NAME, where: "$TABLE_COLUMN_ID = ?", whereArgs: ['$id']);
     
   }
 }

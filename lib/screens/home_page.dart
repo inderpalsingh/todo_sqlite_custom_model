@@ -39,8 +39,23 @@ class _HomePageState extends State<HomePage> {
               itemCount: todoList.length,
               itemBuilder: (context, index) {
                 return ListTile(
+                  onTap: () {
+                    showModalBottomSheet(
+                        context: context, 
+                        builder: (_) {
+                          return customBottomSheet(isUpdate: true, updateIndex: todoList[index].id);
+                        },
+                    
+                    );
+                  },
                   title: Text(todoList[index].title),
                   subtitle: Text(todoList[index].desc),
+                  trailing: InkWell(
+                    onTap: () {
+                      db!.deleteTodo(todoList[index].id);
+                      getAllTodoList();
+                    },
+                      child: const Icon(Icons.delete, color: Colors.red)),
                 );
               },
             ),
@@ -51,61 +66,77 @@ class _HomePageState extends State<HomePage> {
 
           showModalBottomSheet(
             context: context,
-            builder: (context) {
-              return Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Add Todo',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(), hintText: 'Enter task'),
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: descController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(), hintText: 'Enter desc'),
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              if (titleController.text.isNotEmpty &&  descController.text.isNotEmpty) {
-                                db!.addTodo(
-                                  todoModel: TodoModel(title: titleController.text, desc: descController.text),
-                                );
-                              }
-
-                              Navigator.pop(context);
-                              setState(() {
-                                getAllTodoList();
-                              });
-                            },
-                            child: const Text('Save')),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              setState(() {});
-                            },
-                            child: const Text('Cancel')),
-                      ],
-                    )
-                  ],
-                ),
-              );
+            builder: (_) {
+              return customBottomSheet();
             },
           );
           // db!.addTodo();
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+  
+  /////////
+  
+  Widget customBottomSheet({bool isUpdate = false,int updateIndex = -1}){
+    return SizedBox(
+      height: 600,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Text(isUpdate ? 'Update Todo' : 'Add Todo',
+              style: const TextStyle(fontSize: 15),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), hintText: 'Enter task'),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: descController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), hintText: 'Enter desc'),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      if (!isUpdate) {
+                        db!.addTodo(
+                          todoModel: TodoModel(title: titleController.text, desc: descController.text),
+                        );
+                      } else{
+                        // db!.updateTodo[updateIndex] = TodoModel(
+                        //     title: titleController.text,
+                        //     desc: descController.text,
+                        // );
+
+                        db!.updateTodo(TodoModel(
+                          title: titleController.text,
+                          desc: descController.text,
+                        ));
+                      }
+                      Navigator.pop(context);
+                      getAllTodoList();
+                    },
+                    child: Text(isUpdate ? 'Update Todo' : 'Add Todo')),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      setState(() {});
+                    },
+                    child: const Text('Cancel')),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
