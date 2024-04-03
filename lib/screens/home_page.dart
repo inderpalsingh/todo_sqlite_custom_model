@@ -40,10 +40,14 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   onTap: () {
+                    titleController.text = todoList[index].title;
+                    descController.text = todoList[index].desc;
                     showModalBottomSheet(
                         context: context, 
                         builder: (_) {
-                          return customBottomSheet(isUpdate: true, updateIndex: todoList[index].id);
+                          return customBottomSheet(isUpdate: true,
+                              updateIndex: todoList[index].id,
+                          );
                         },
                     
                     );
@@ -70,16 +74,17 @@ class _HomePageState extends State<HomePage> {
               return customBottomSheet();
             },
           );
-          // db!.addTodo();
+         
         },
         child: const Icon(Icons.add),
       ),
     );
   }
   
-  /////////
+  ///////// customBottomSheet
   
   Widget customBottomSheet({bool isUpdate = false,int updateIndex = -1}){
+    
     return SizedBox(
       height: 600,
       child: Padding(
@@ -113,18 +118,17 @@ class _HomePageState extends State<HomePage> {
                           todoModel: TodoModel(title: titleController.text, desc: descController.text),
                         );
                       } else{
-                        // db!.updateTodo[updateIndex] = TodoModel(
-                        //     title: titleController.text,
-                        //     desc: descController.text,
-                        // );
-
                         db!.updateTodo(TodoModel(
+                          id: updateIndex!,
                           title: titleController.text,
                           desc: descController.text,
                         ));
+                        // titleController.clear();
+                        // descController.clear();
                       }
-                      Navigator.pop(context);
                       getAllTodoList();
+                      Navigator.pop(context);
+                     
                     },
                     child: Text(isUpdate ? 'Update Todo' : 'Add Todo')),
                 ElevatedButton(
